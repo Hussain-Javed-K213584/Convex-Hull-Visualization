@@ -45,21 +45,6 @@ function drawLines(hullPoints){
     }
 }
 
-function bruteForceAnimation(hullPoints){
-    let hullPointsToDraw = [];
-    for (let i = 0; i < points.length; i++){
-        for (let j = 0; j < points.length; j++){
-            // setTimeout(drawLineFromXtoY, 500, points[i], points[j]);
-            drawLineFromXtoY(points[i], points[j]);
-            setTimeout(clearCanvasAndDrawAgain, 100);
-        }
-        // After the first iteration, draw the first path that makes the hull
-        // Push the first actual hull point
-        hullPointsToDraw.push(hullPoints[i], hullPoints[i+1])
-        drawLines(hullPointsToDraw);
-    }
-}
-
 let currentBruteIndex = 0;
 function drawHullBruteForce(hullPoints){
     ctx.beginPath();
@@ -82,8 +67,7 @@ function doBruteForce(){
     let arrayPoints = convertDictToArray(points);
     let hullPointsBruteForce = bruteHull(arrayPoints);
     hullPointsBruteForce = convertPointsToDict(hullPointsBruteForce);
-    // drawHullBruteForce(hullPointsBruteForce);
-    bruteForceAnimation(hullPointsBruteForce);
+    drawHullBruteForce(hullPointsBruteForce);
 }
 
 startBruteForce.addEventListener("click", () => {
