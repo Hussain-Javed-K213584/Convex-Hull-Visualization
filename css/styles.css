@@ -20,6 +20,6 @@ html, body{
     gap: 10px;
 }
 
-#circle, #convex{
+#canvas, #convex{
     border: 5px solid black;
 }
