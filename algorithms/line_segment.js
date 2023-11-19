@@ -1,30 +1,7 @@
-// const canvas = document.getElementById("circle");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 const resultDisplay = document.getElementById("result");
 const startButton = document.getElementById("start-button");
-// const ctx = canvas.getContext("2d");
-// let previousPoints = {}  // List that holds tuple of previous points. Store as dictionarry
-// function draw(mouseX, mouseY){
-
-//   // Start at one point, draw a straight line to the other point
-//   ctx.beginPath();
-//   // If array is 0 means it's our first point
-//   if (Object.keys(previousPoints).length === 0){
-//     ctx.moveTo(mouseX, mouseY);
-//   }
-//   else {
-//     ctx.moveTo(previousPoints.x, previousPoints.y); // Set cursor to previous point
-//     ctx.lineTo(mouseX, mouseY); // Create a line from previous points to new points
-//     ctx.closePath();
-//     ctx.stroke();
-//   }
-// }
-
-// function plotPoints(mouseX, mouseY){
-//   const circle = new Path2D();
-//   circle.arc(mouseX, mouseY, 5, 0, 2 * Math.PI);
-//   ctx.fill(circle);
-//   draw(mouseX, mouseY); // Once point is plotted, create a line pointing to next circle
-// }
 
 // Thank u stack overflow
 function  getMousePos(canvas, evt) {
@@ -37,15 +14,6 @@ function  getMousePos(canvas, evt) {
     y: (evt.clientY - rect.top) * scaleY     // been adjusted to be relative to element
   }
 }
-
-// canvas.addEventListener("click", (e) => {
-//   // draw(e.pageX, e.pageY);
-//   currentPoints = getMousePos(canvas, e);
-//   console.log("New points are: " + currentPoints.x + "," + currentPoints.y);
-//   plotPoints(currentPoints.x, currentPoints.y);
-//   previousPoints = currentPoints;
-//   console.log("Prev points are: " + previousPoints.x + "," + previousPoints.y);
-// });
 
 
 /*
@@ -96,75 +64,47 @@ function doIntersect(L1, L2) {
   return false; // Doesn't fall in any of the above cases
 }
 
-const newCanvas = document.getElementById("circle");
-const newCtx = newCanvas.getContext("2d");
-
-let L1Points = [
-  {
-    x: 0,
-    y: 0
-  },
-  {
-    x: 0,
-    y: 0
-  }
-]
-let L2Points = [
-  {
-    x: 0,
-    y: 0
-  },
-  {
-    x: 0,
-    y: 0
-  }
-]
-
 function plotPoints(x, y){
   const circle = new Path2D();
   circle.arc(x, y, 5, 0, 2*Math.PI);
-  newCtx.fill(circle);
+  ctx.fill(circle);
 }
 
-function drawTwoLines(x1, y1, x2, y2){
-  newCtx.beginPath();
-  newCtx.moveTo(x1, y1);
-  newCtx.lineTo(x2, y2);
-  newCtx.closePath();
-  newCtx.stroke();
+function drawLines(points){
+  ctx.beginPath();
+  if (points.length == 2){
+    ctx.moveTo(points[0].x, points[0].y);
+    ctx.lineTo(points[1].x, points[1].y);
+    ctx.closePath();
+    ctx.stroke();
+  }
+  else if (points.length == 4){
+    ctx.moveTo(points[2].x, points[2].y);
+    ctx.lineTo(points[3].x, points[3].y);
+    ctx.closePath();
+    ctx.stroke();
+  }
 }
 
-newCanvas.addEventListener("click", (e) => {
-  if (L1Points[0].x == 0 && L1Points[0].y == 0) {
-    FirstMousePoints = getMousePos(newCanvas, e);
-    L1Points[0].x = FirstMousePoints.x;
-    L1Points[0].y = FirstMousePoints.y;
-    plotPoints(L1Points[0].x, L1Points[0].y);
-  }
-  else if (L1Points[1].x == 0 && L1Points[1].y == 0) {
-    SecondMousePoints = getMousePos(newCanvas, e);
-    L1Points[1].x = SecondMousePoints.x;
-    L1Points[1].y = SecondMousePoints.y;
-    plotPoints(L1Points[1].x, L1Points[1].y);
-    drawTwoLines(L1Points[0].x, L1Points[0].y, L1Points[1].x, L1Points[1].y);
-  }
-  else if (L2Points[0].x == 0 && L2Points[0].y == 0) {
-    FirstMousePoints = getMousePos(newCanvas, e);
-    L2Points[0].x = FirstMousePoints.x;
-    L2Points[0].y = FirstMousePoints.y;
-    plotPoints(L2Points[0].x, L2Points[0].y);
-  }
-  else if (L2Points[1].x == 0 && L2Points[1].y == 0) {
-    SecondMousePoints = getMousePos(newCanvas, e);
-    L2Points[1].x = SecondMousePoints.x;
-    L2Points[1].y = SecondMousePoints.y;
-    plotPoints(L2Points[1].x, L2Points[1].y);
-    drawTwoLines(L2Points[0].x, L2Points[0].y, L2Points[1].x, L2Points[1].y);
-    console.log(doIntersect(L1Points, L2Points));
-  }
+let linePoints = [];
 
+canvas.addEventListener("click", (event) => {
+  // Add points to list of points
+  let point = getMousePos(canvas, event);
+  linePoints.push(point);
+  plotPoints(point.x, point.y);
+  if (linePoints.length % 2 == 0){
+    drawLines(linePoints);
+  }
 });
 
 startButton.addEventListener("click", (e) => {
-
+  let l1 = [linePoints[0], linePoints[1]], l2 = [linePoints[2], linePoints[3]];
+  let condition = doIntersect(l1, l2);
+  if (condition){
+    console.log("Intersects");
+  }
+  else{
+    console.log("Does not intersect");
+  }
 });
