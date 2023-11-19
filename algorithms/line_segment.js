@@ -1,7 +1,8 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const resultDisplay = document.getElementById("result");
-const startButton = document.getElementById("start-button");
+const orientationButton = document.getElementById("orientation-button");
+const crossProdBtn = document.getElementById("cross-product-btn");
 
 // Thank u stack overflow
 function  getMousePos(canvas, evt) {
@@ -64,6 +65,26 @@ function doIntersect(L1, L2) {
   return false; // Doesn't fall in any of the above cases
 }
 
+/* 
+  Below is the implementation to check if two lines
+  intersect using the cross product method
+*/
+
+function crossProduct(p1, p2, p3) {
+  return (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y);
+}
+
+function lineSegmentIntersectCrossProduct(p1, p2, p3, p4) {
+  const cross1 = crossProduct(p1, p2, p3);
+  const cross2 = crossProduct(p1, p2, p4);
+  const cross3 = crossProduct(p3, p4, p1);
+  const cross4 = crossProduct(p3, p4, p2);
+  
+  // Two alternating cross vairables must have opposite signs
+  // To check if two lines intersect or not
+  return (cross1 * cross2 < 0) && (cross3 * cross4 < 0);
+}
+
 function plotPoints(x, y){
   const circle = new Path2D();
   circle.arc(x, y, 5, 0, 2*Math.PI);
@@ -98,7 +119,7 @@ canvas.addEventListener("click", (event) => {
   }
 });
 
-startButton.addEventListener("click", (e) => {
+orientationButton.addEventListener("click", (e) => {
   let l1 = [linePoints[0], linePoints[1]], l2 = [linePoints[2], linePoints[3]];
   let condition = doIntersect(l1, l2);
   if (condition){
@@ -106,5 +127,15 @@ startButton.addEventListener("click", (e) => {
   }
   else{
     console.log("Does not intersect");
+  }
+});
+
+crossProdBtn.addEventListener("click", () => {
+  let condition = lineSegmentIntersectCrossProduct(linePoints[0], linePoints[1], linePoints[2], linePoints[3]);
+  if (condition){
+    console.log("Line Intersects");
+  }
+  else{
+    console.log("Does not Intersect");
   }
 });
