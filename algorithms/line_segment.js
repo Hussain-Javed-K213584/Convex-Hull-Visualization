@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d");
 const resultDisplay = document.getElementById("result");
 const orientationButton = document.getElementById("orientation-button");
 const crossProdBtn = document.getElementById("cross-product-btn");
+const lineSegmentResult = document.getElementById("line-segment-result");
 
 // Thank u stack overflow
 function  getMousePos(canvas, evt) {
@@ -124,9 +125,11 @@ orientationButton.addEventListener("click", (e) => {
   let condition = doIntersect(l1, l2);
   if (condition){
     console.log("Intersects");
+    lineSegmentResult.innerText = "Line Intersects. Orientation Method was used."
   }
   else{
     console.log("Does not intersect");
+    lineSegmentResult.innerText = "Lines do not intersect. Orientation Method was used."
   }
 });
 
@@ -134,8 +137,10 @@ crossProdBtn.addEventListener("click", () => {
   let condition = lineSegmentIntersectCrossProduct(linePoints[0], linePoints[1], linePoints[2], linePoints[3]);
   if (condition){
     console.log("Line Intersects");
+    lineSegmentResult.innerText = "Lines Intersect. Vector Product method was used."
   }
   else{
     console.log("Does not Intersect");
+    lineSegmentResult.innerText = "Lines do not intersect. Vector Product method was used."
   }
 });
