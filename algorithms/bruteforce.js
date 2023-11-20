@@ -1,19 +1,17 @@
 const startBruteForce = document.getElementById("start-bruteforce");
-
+const performanceResult = document.getElementById("performance-result");
 
 function convertDictToArray(points){
     let result = [];
     for (let i = 0; i < points.length; i++){
         result.push([points[i].x, points[i].y]);
     }
-    console.log(result);
     return result;
 }
 
 function convertPointsToDict(pointsArray){
     let result = [];
     for(let i = 0; i < pointsArray.length; i++){
-        console.log(pointsArray[i]);
         result.push({
             x: pointsArray[i][0],
             y: pointsArray[i][1]
@@ -65,9 +63,13 @@ function drawHullBruteForce(hullPoints){
 
 function doBruteForce(){
     let arrayPoints = convertDictToArray(points);
+    const brute1 = performance.now();
     let hullPointsBruteForce = bruteHull(arrayPoints);
+    const brute2 = performance.now();
+    const bruteHullPerf = brute2 - brute1;
     hullPointsBruteForce = convertPointsToDict(hullPointsBruteForce);
     drawHullBruteForce(hullPointsBruteForce);
+    return bruteHullPerf;
 }
 
 startBruteForce.addEventListener("click", () => {
@@ -75,7 +77,8 @@ startBruteForce.addEventListener("click", () => {
     points.forEach((point) => {
         plotPoints(point.x, point.y);
     })
-    doBruteForce();
+    const bruteforcePerformance = doBruteForce();
+    performanceResult.innerText = `Algorithm used: Brute Force\nTime taken: ${bruteforcePerformance}ms`;
 });
 
 

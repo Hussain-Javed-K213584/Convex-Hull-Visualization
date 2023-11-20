@@ -20,13 +20,16 @@ function drawQuickHull(hullPoints){
 
 
 function doQuickHull(){
+    const quickHull1 = performance.now();
     hullP = QuickHull(points);
-    console.log(hullP);
+    const quickHull2 = performance.now();
     drawQuickHull(hullP);
+    return quickHull2 - quickHull1;
 }
 
 startQuickHull.addEventListener("click", (e) => {
-    doQuickHull();
+    const quickHullResult = doQuickHull();
+    grahamPerformanceResult.innerText = `Algorithm Used: Quick Hull\nTime Taken: ${quickHullResult}ms`;
 })
 
 var hull = [];

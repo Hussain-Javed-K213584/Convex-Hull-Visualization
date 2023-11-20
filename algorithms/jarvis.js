@@ -23,15 +23,18 @@ function drawHullJarvis(hullPoints) {
 
 
 function doJarvisMarch(){
-   let boundaryPoints =  JarvisConvexHull(points, points.length);
-//    console.log(boundaryPoints);
-   let hullP = boundaryPoints;
-   console.log(hullP);
-   drawHullJarvis(hullP);
+    
+    const jarvis1 = performance.now();
+    let boundaryPoints =  JarvisConvexHull(points, points.length);
+    const jarvis2 = performance.now();
+    let hullP = boundaryPoints;
+    drawHullJarvis(hullP);
+    return jarvis2 - jarvis1;
 }
 
 startJarvisMarch.addEventListener("click", () => {
-    doJarvisMarch();
+    const jarvisPerformance =  doJarvisMarch();
+    grahamPerformanceResult.innerText = `Algorithm Used: Jarvis March/Gift Wrapping\nTime Taken: ${jarvisPerformance}ms`;
 });
 
 function JarvisleftIndex(points){

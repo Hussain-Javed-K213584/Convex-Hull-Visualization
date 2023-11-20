@@ -42,14 +42,18 @@ async function drawChanConvexHull(partialHulls, convexHull) {
 }
 
 function doChanConvexHull(points) {
+    const chanPerf1 = performance.now();
     let { convexHull, partialHulls } = ChanConvexHull.calculate(points);
+    const chanPerf2 = performance.now();
     console.log(partialHulls);
     console.log(convexHull);
     drawChanConvexHull(partialHulls, convexHull);
+    return chanPerf2 - chanPerf1;
 }
 
 chanBtn.addEventListener("click", () => {
-    doChanConvexHull(points);
+    const chanPerformance = doChanConvexHull(points);
+    grahamPerformanceResult.innerText = `Algorithm Used: Chan's Algorithm\nTime Taken: ${chanPerformance}ms`;
 
 });
 

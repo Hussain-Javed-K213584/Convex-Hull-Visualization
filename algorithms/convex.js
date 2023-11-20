@@ -3,6 +3,8 @@ const ctx = canvas.getContext("2d");
 const startGraham = document.getElementById("start-graham");
 const resetHullBtn = document.getElementById('reset-points');
 const plotRandomBtn = document.getElementById('plot-random');
+const grahamPerformanceResult = document.getElementById("performance-result");
+ctx.lineWidth = 3; // Set line width to 3
 
 let points = [];
 // Thank u stack overflow
@@ -58,13 +60,17 @@ function drawGrahamHull(hullPoints) {
 }
 
 function doGrahamScan() {
+    const t1 = performance.now();
     let hull = new ConvexHullGrahamScan()
+    const t2 = performance.now();
+    const grahamPerformance = t2 - t1;
     points.forEach((point) => {
         hull.addPoint(point.x, point.y);
     })
     let hullP = hull.getHull();
     console.log(hullP);
     drawGrahamHull(hullP);
+    return grahamPerformance;
 }
 
 function generateRandomPoints(){
@@ -72,7 +78,7 @@ function generateRandomPoints(){
     let randomInterval = function (min, max){
         return (Math.random() * (max - min + 1) + min);
     }
-    for (let i = 0; i < 100; i++){
+    for (let i = 0; i < 500; i++){
         let point = {
             x: randomInterval(10, cWidth-10),
             y: randomInterval(10, cHeight-10)
@@ -90,13 +96,15 @@ canvas.addEventListener("click", (e) => {
 
 resetHullBtn.addEventListener("click", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    grahamPerformanceResult.innerText = "";
     points.forEach((point) => {
         plotPoints(point.x, point.y);
     })
 });
 
 startGraham.addEventListener("click", () => {
-    doGrahamScan();
+    const grahamPerformance = doGrahamScan();
+    grahamPerformanceResult.innerText = `Algorithm Used: Graham Scan\nTime Taken: ${grahamPerformance}ms`;
 });
 
 plotRandomBtn.addEventListener("click", () => {

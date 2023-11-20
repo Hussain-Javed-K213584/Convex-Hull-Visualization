@@ -4,11 +4,6 @@
     margin: 0;
 }
 
-html, body{
-    height: 100%;
-    width: 100%;
-}
-
 .container{
     /* border: 5px solid black; */
     width: 100%;
