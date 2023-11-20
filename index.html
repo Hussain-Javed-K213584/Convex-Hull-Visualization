@@ -25,18 +25,19 @@
     <div class="container bg-secondary">
         <div class="container">
             <div class="row">
-                <h2 class="col gap-3">Plot two lines to check if two lines intersect or not!</h2>
+                <h2 class="col gap-3 mt-3">Plot two lines to check if two lines intersect or not!</h2>
             </div>
         </div>
-        <canvas class="border border-secondary-subtle col gap-3" id="canvas" width="800px" height="600px"></canvas>
+        <canvas class="border border-secondary-subtle col gap-3 mt-2" id="canvas" width="800px" height="600px"></canvas>
         <div class="btn-container container">
             <div class="row gap-3 mt-2">
-                <button type="button" id="orientation-button" class="btn btn-primary col ">Use Orientation Method</button>
+                <button type="button" id="orientation-button" class="btn btn-primary col">Use Orientation Method</button>
                 <button type="button" id="cross-product-btn" class="btn btn-primary col">Use Vector Cross Product Method</button>
+                <button type="button" id="line-intersection-btn" class="btn btn-primary col">Use Line Slope Method</button>
             </div>
         </div>
         <div class="container text-center">
-            <h3 id="line-segment-result"></h3>
+            <h3 id="line-segment-result" class="mt-5"></h3>
         </div>
     </div>
 </body>

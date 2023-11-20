@@ -4,6 +4,7 @@ const resultDisplay = document.getElementById("result");
 const orientationButton = document.getElementById("orientation-button");
 const crossProdBtn = document.getElementById("cross-product-btn");
 const lineSegmentResult = document.getElementById("line-segment-result");
+const lineIntersectionBtn = document.getElementById("line-intersection-btn");
 
 // Thank u stack overflow
 function  getMousePos(canvas, evt) {
@@ -64,6 +65,41 @@ function doIntersect(L1, L2) {
   if (o4 === 0 && onSegment(p2, q1, q2)) return true;
 
   return false; // Doesn't fall in any of the above cases
+}
+
+/*
+  Below is the implementation of checking if line intersect
+  using the slope formula method.
+*/
+
+function doLinesIntersectSlope(line1Start, line1End, line2Start, line2End) {
+  const slope1 = (line1End.y - line1Start.y) / (line1End.x - line1Start.x);
+  const slope2 = (line2End.y - line2Start.y) / (line2End.x - line2Start.x);
+
+  // Check if the lines are parallel
+  if (slope1 === slope2) {
+      return false; // Lines are parallel, no intersection
+  }
+
+  // Check if the intersection point lies within the line segments
+  const intersectionX = ((line1Start.y - line2Start.y) + slope2 * line2Start.x - slope1 * line1Start.x) / (slope2 - slope1);
+  const intersectionY = slope1 * (intersectionX - line1Start.x) + line1Start.y;
+
+  if (
+      isBetween(intersectionX, line1Start.x, line1End.x) &&
+      isBetween(intersectionY, line1Start.y, line1End.y) &&
+      isBetween(intersectionX, line2Start.x, line2End.x) &&
+      isBetween(intersectionY, line2Start.y, line2End.y)
+  ) {
+      return true; // Lines intersect
+  }
+
+  return false; // Intersection point is outside the line segments
+}
+
+function isBetween(value, start, end) {
+  // Check if 'value' is between 'start' and 'end'
+  return value >= Math.min(start, end) && value <= Math.max(start, end);
 }
 
 /* 
@@ -132,6 +168,17 @@ orientationButton.addEventListener("click", (e) => {
     lineSegmentResult.innerText = "Lines do not intersect. Orientation Method was used."
   }
 });
+
+lineIntersectionBtn.addEventListener("click", () => {
+  let condition = doLinesIntersectSlope(linePoints[0], linePoints[1], linePoints[2], linePoints[3]);
+  if (condition){
+    lineSegmentResult.innerText = "Lines Intersect. Slope method used.";
+  }
+  else{
+    lineSegmentResult.innerText = "Lines do not intersect. Slope method used.";
+  }
+  
+})
 
 crossProdBtn.addEventListener("click", () => {
   let condition = lineSegmentIntersectCrossProduct(linePoints[0], linePoints[1], linePoints[2], linePoints[3]);
