@@ -14,7 +14,7 @@
 <body class="bg-secondary">
     <nav class="navbar bg-dark border-bottom bottom-body" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Line Segment Visualization</a>
+            <a class="navbar-brand" href="#">Line Segment Intersection</a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="convex.html" target="_blank">Convex Hull Visualization</a>
@@ -25,18 +25,19 @@
     <div class="container bg-secondary">
         <div class="container">
             <div class="row">
-                <h2 class="col mt-5">Plot two lines to check if two lines intersect or not!</h2>
+                <h2 class="col gap-3 mt-3">Plot two lines to check if two lines intersect or not!</h2>
             </div>
         </div>
-        <canvas class="border border-secondary-subtle col mt-2" id="canvas" width="800px" height="600px"></canvas>
+        <canvas class="border border-secondary-subtle col gap-3 mt-2" id="canvas" width="800px" height="600px"></canvas>
         <div class="btn-container container">
-            <div class="row">
-                <button type="button" id="orientation-button" class="btn btn-primary col offset-md-1 mt-5 mb-5">Use Orientation Method</button>
-                <button type="button" id="cross-product-btn" class="btn btn-primary col offset-md-2 mt-5 mb-5">Use Vector Cross Product Method</button>
+            <div class="row gap-3 mt-2">
+                <button type="button" id="orientation-button" class="btn btn-primary col">Use Orientation Method</button>
+                <button type="button" id="cross-product-btn" class="btn btn-primary col">Use Vector Cross Product Method</button>
+                <button type="button" id="line-intersection-btn" class="btn btn-primary col">Use Line Slope Method</button>
             </div>
         </div>
         <div class="container text-center">
-
+            <h3 id="line-segment-result" class="mt-5"></h3>
         </div>
     </div>
 </body>
