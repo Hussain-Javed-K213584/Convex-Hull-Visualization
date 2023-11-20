@@ -13,17 +13,28 @@
     <link href="css/styles.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-secondary">
+    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Convex Hull Visualization</a>
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="index.html" target="_blank">Line Segment Intersection</a>
+                </li>
+            </ul>
+        </div>
+      
+    </nav>
     <div class="container">
-        <canvas id="convex" width="800" height="600"></canvas>
-    <div class="buttonContainers">
-        <button id="start-graham">Start Graham</button>
-        <button id="start-jarvis">Start Gift Wrapping</button>
-        <button id="start-quickhull">Start Quick Hull</button>
-        <button id="start-bruteforce">Start Brute Force</button>
-        <button id="start-chan">Start Chan's Algorithm</button>
-        <button id="plot-random">Plot Random Points</button>
-        <button id="reset-points">Reset Hull</button>
+        <canvas class="border" id="convex" width="800" height="600"></canvas>
+    <div class="buttonContainers row gap-3 mt-4">
+        <button class="col btn btn-primary" type="button" id="start-graham">Start Graham</button>
+        <button class="col btn btn-primary" type="button" id="start-jarvis">Start Gift Wrapping</button>
+        <button class="col btn btn-primary" type="button" id="start-quickhull">Start Quick Hull</button>
+        <button class="col btn btn-primary" type="button" id="start-bruteforce">Start Brute Force</button>
+        <button class="col btn btn-primary" type="button" id="start-chan">Start Chan's Algorithm</button>
+        <button class="col btn btn-info" type="button" id="plot-random">Plot Random Points</button>
+        <button class="col btn btn-danger" type="button" id="reset-points">Reset Hull</button>
     </div>
     </div>
 </body>
