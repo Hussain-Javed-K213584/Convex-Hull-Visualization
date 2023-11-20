@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,35 @@
     <script src="algorithms/line_segment.js" defer></script>
     <script src="js/bootstrap.bundle.min.js" defer></script>
     <link href="css/styles.css" rel="stylesheet">
-    <link href="css/bootstrap.min.css" rel="stylesheet">  
+    <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h2>The Following canvas checks if two lines drawn intersect or not!</h2>
-        <canvas id="canvas" width="500px" height="500px"></canvas>
-        <button id="orientation-button">Use Orientation Method</button>
-        <button id="cross-product-btn">Use Vector Cross Product Method</button>
+
+<body class="bg-secondary">
+    <nav class="navbar bg-dark border-bottom bottom-body" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Line Segment Visualization</a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="convex.html" target="_blank">Convex Hull Visualization</a>
+                </li>
+            </ul>    
+        </div>
+    </nav>
+    <div class="container bg-secondary">
+        <div class="container">
+            <div class="row">
+                <h2 class="col">The Following canvas checks if two lines drawn intersect or not!</h2>
+            </div>
+        </div>
+        <canvas class="border border-secondary-subtle col" id="canvas" width="500px" height="500px"></canvas>
+        <div class="btn-container container">
+            <div class="row">
+                <button type="button" id="orientation-button" class="btn btn-primary col offset-md-1">Use Orientation Method</button>
+                <button type="button" id="cross-product-btn" class="btn btn-primary col offset-md-2">Use Vector Cross Product Method</button>
+            </div>
+        </div>
         <h2 id="result"></h2>
-        <a href="convex.html" target="_blank">Convex Hull</a>
     </div>
 </body>
+
 </html>
