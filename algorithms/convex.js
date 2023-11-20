@@ -100,6 +100,10 @@ startGraham.addEventListener("click", () => {
 });
 
 plotRandomBtn.addEventListener("click", () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Empty canvas
+    for (let i = 0; i < points.length; i++){
+        points.shift();
+    }
     generateRandomPoints();
     points.forEach((point) => {
         plotPoints(point.x, point.y);
@@ -113,12 +117,6 @@ function reDrawLines(fromX, toY) {
     })
 }
 
-/**
- * Graham's Scan Convex Hull Algorithm
- * @desc An implementation of the Graham's Scan Convex Hull algorithm in JavaScript.
- * @author Brian Barnett, brian@3kb.co.uk, http://brianbar.net/ || http://3kb.co.uk/
- * @version 1.0.5
- */
 function ConvexHullGrahamScan() {
     this.anchorPoint = undefined;
     this.reverse = false;
@@ -278,65 +276,3 @@ ConvexHullGrahamScan.prototype = {
         }
     }
 };
-
-// EXPORTS
-
-if (typeof define === 'function' && define.amd) {
-    define(function () {
-        return ConvexHullGrahamScan;
-    });
-}
-if (typeof module !== 'undefined') {
-    module.exports = ConvexHullGrahamScan;
-}
-
-function bruteForceConvexHull() {
-    const n = points.length;
-    let hull = [];
-
-    // Check all possible combinations of three points
-    for (let i = 0; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-            for (let k = j + 1; k < n; k++) {
-                const a = points[i];
-                const b = points[j];
-                const c = points[k];
-
-                //for (let i = 0; i < 3; i++){
-                ctx.beginPath();
-                ctx.moveTo(a.x, a.y);
-                ctx.lineTo(b.x, b.y);
-                ctx.stroke();
-                reDraw(points);
-                window.requestAnimationFrame(bruteForceConvexHull);
-
-
-                if (orientationCH(a, b, c) === 2) {
-                    // Points a, b, c form a counter-clockwise turn
-                    if (!pointInsideHull(hull, a)) hull.push(a);
-                    if (!pointInsideHull(hull, b)) hull.push(b);
-                    if (!pointInsideHull(hull, c)) hull.push(c);
-                }
-            }
-        }
-    }
-    return hull;
-}
-
-function orientationCH(p, q, r) {
-    const val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-    if (val === 0) return 0; // Collinear
-    return (val > 0) ? 1 : 2; // Clockwise or counterclockwise
-}
-
-function pointInsideHull(hull, p) {
-    // Check if point p is already in the convex hull
-    for (let i = 0; i < hull.length; i++) {
-        if (hull[i].x === p.x && hull[i].y === p.y) {
-            return true;
-        }
-    }
-    return false;
-}
-
-

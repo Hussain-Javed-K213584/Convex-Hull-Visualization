@@ -60,61 +60,35 @@ const ChanConvexHull = function () {
 
     return { calculate: calculateHull }
 
-    /**
-     * Calculate the angle between two points with respect to the x axis
-     * @param {*} pt1 
-     * @param {*} pt2 
-     */
+    
     function angleToPoint(pt1, pt2) {
         return Math.atan2(pt1.y - pt2.y, pt2.x - pt1.x);
     }
 
-    /**
-     * Calculate the angle between 3 points, with pt2 being the center point
-     * @param {*} pt1 
-     * @param {*} pt2 
-     * @param {*} pt3 
-     */
+    
     function getAngleBetween3Points(pt1, pt2, pt3) {
         let ab = Math.sqrt(Math.pow(pt2.x - pt1.x, 2) + Math.pow(pt2.y - pt1.y, 2));
         let bc = Math.sqrt(Math.pow(pt2.x - pt3.x, 2) + Math.pow(pt2.y - pt3.y, 2));
         let ac = Math.sqrt(Math.pow(pt3.x - pt1.x, 2) + Math.pow(pt3.y - pt1.y, 2));
         return Math.acos((bc * bc + ab * ab - ac * ac) / (2 * bc * ab));
     }
-    /**
-     * based on the textbook, 2d area calculation between 3 points
-     * @param {*} pt1 
-     * @param {*} pt2 
-     * @param {*} pt3 
-     */
+    
     function getAreaBetween3Points(pt1, pt2, pt3) {
         //reversed the y because js coordinates
         return (pt2.x - pt1.x) * (pt1.y - pt3.y) - (pt3.x - pt1.x) * (pt1.y - pt2.y);
     }
-    /**
-     * 3 points are defined as being "left" if the area between them using the area calculation is positive.
-     * @param {*} pt1 
-     * @param {*} pt2 
-     * @param {*} pt3 
-     */
+    
     function checkIfLeftTurn(pt1, pt2, pt3) {
         return getAreaBetween3Points(pt1, pt2, pt3) > 0;
     }
 
-    /**
-     * Check if the points are the same
-     * @param {*} p1 
-     * @param {*} p2 
-     */
+    
     function isSamePoint(p1, p2) {
         if (!p1 || !p2) return false;
         return p1.x === p2.x && p1.y === p2.y;
     }
 
-    /**
-     * Do graham scan on the set of points given.
-     * @param {*} points 
-     */
+    
     function grahamScan(points) {
         let v_lowest = points[0];
         //find lowest point
@@ -166,7 +140,8 @@ const ChanConvexHull = function () {
         while (index < points.length) {
             stacklen = stack.length;
             //console.log(stacklen);
-            if (stacklen > 1) {//make sure there's at least 2 things before left test
+            if (stacklen > 1) {
+                //make sure there's at least 2 things before left test
                 let l = checkIfLeftTurn(stack[stacklen - 2], stack[stacklen - 1], points[index])
                 if (l) {
                     stack.push(points[index]);
@@ -186,13 +161,7 @@ const ChanConvexHull = function () {
         return stack;
 
     }
-    /**
-     * Variation of binary search to find the tangent.
-     * Full details on report
-     * @param {*} hull 
-     * @param {*} p1 
-     * @param {*} p2 
-     */
+
     function tangentBinarySearch(hull, p1, p2) {
 
         let index = -1;
@@ -258,11 +227,7 @@ const ChanConvexHull = function () {
     }
 
 
-    /**
-     * do Jarvis March on the subHulls calculated by graham scan
-     * @param {*} m 
-     * @param {*} subHulls 
-     */
+    
     function jarvisMarch(m, subHulls) {
         //We do not need to Jarvis march if there is only one subhull. This is our convex hull.
         if (subHulls.length === 1) return subHulls[0]
@@ -326,10 +291,7 @@ const ChanConvexHull = function () {
 
     }
 
-    /**
-     * find the convex hull of a set of points and also the partial hulls used in the final calculation
-     * @param {*} points 
-     */
+    
     function calculateHull(points) {
         let finalHull;
         let partialHulls = [];
