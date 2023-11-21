@@ -70,10 +70,21 @@ function drawHullBruteForce(hullPoints){
 
 */
 
-async function drawLineBruteForceXtoY(L1, L2){
+// Draws a line from point A to point B
+function drawLineBruteForceXtoY(L1, L2){
     ctx.beginPath();
     ctx.moveTo(L1.x, L1.y);
     ctx.lineTo(L2.x, L2.y);
+    ctx.stroke();
+}
+
+// Draws a convex upto the upper limit provided
+async function drawHullExperimentalBruteForce(hullPoints, upperLimit){
+    ctx.beginPath();
+    ctx.moveTo(hullPoints[0].x, hullPoints[0].y);
+    for(let i = 0; i <= upperLimit; i++){
+        ctx.lineTo(hullPoints[i].x, hullPoints[i].y);
+    }
     ctx.stroke();
 }
 
@@ -82,7 +93,10 @@ async function bruteForceTransitionAnimation(hullPoints){
     // Then create and erase lines from one point to the other
     // Use two loops, once the inner loop ends, create the first
     // conves line and continue onwards.
-    for (let i = 0; i < points.length; i++){
+    let index1 = 0, index2 = 1; // Variables for hullPoints
+    let upperLimit = 0; // The index till where the hull should be drawn
+    // Outer loop stops at length - 1 becuase it would continue to draw even when hull was created
+    for (let i = 0; i < hullPoints.length; i++){
         for (let j = 0; j < points.length; j++){
             drawLineBruteForceXtoY(points[i], points[j]); // We now know that this function creates a line from one point to the other
             await sleep(50);
@@ -91,8 +105,18 @@ async function bruteForceTransitionAnimation(hullPoints){
             points.forEach((point) => {
                 plotPoints(point.x, point.y);
             })
+            // Draw the hull again
+            await drawHullExperimentalBruteForce(hullPoints, upperLimit);
         }
-        
+        // After the inner loop ends, create the first convex
+        drawLineBruteForceXtoY(hullPoints[index1], hullPoints[index2]);
+        upperLimit = index2;
+        index1++;
+        index2++;
+        // If index2 reaches end+1, it's time to finish convex hull
+        if (index2 == hullPoints.length){
+            index2 = 0;
+        }
     }
 }
 
