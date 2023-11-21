@@ -61,6 +61,48 @@ function drawHullBruteForce(hullPoints){
     setTimeout(drawHullBruteForce, 500, hullPoints);
 }
 
+/*
+    #####################################################
+    # Expermemtal feature to add bruteforce animation   #
+    # Should show transitions, checking each point from #
+    # starting point and then making the convex.        #
+    #####################################################
+
+*/
+
+async function drawLineBruteForceXtoY(L1, L2){
+    ctx.beginPath();
+    ctx.moveTo(L1.x, L1.y);
+    ctx.lineTo(L2.x, L2.y);
+    ctx.stroke();
+}
+
+async function bruteForceTransitionAnimation(hullPoints){
+    // Start with the original array
+    // Then create and erase lines from one point to the other
+    // Use two loops, once the inner loop ends, create the first
+    // conves line and continue onwards.
+    for (let i = 0; i < points.length; i++){
+        for (let j = 0; j < points.length; j++){
+            drawLineBruteForceXtoY(points[i], points[j]); // We now know that this function creates a line from one point to the other
+            await sleep(50);
+            // Remove the previous line and plot points again
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            points.forEach((point) => {
+                plotPoints(point.x, point.y);
+            })
+        }
+        
+    }
+}
+
+/*
+
+    ###################################
+    #Experimental code end            #
+    ###################################
+
+*/
 function doBruteForce(){
     let arrayPoints = convertDictToArray(points);
     const brute1 = performance.now();
@@ -68,7 +110,10 @@ function doBruteForce(){
     const brute2 = performance.now();
     const bruteHullPerf = brute2 - brute1;
     hullPointsBruteForce = convertPointsToDict(hullPointsBruteForce);
-    drawHullBruteForce(hullPointsBruteForce);
+
+    //drawHullBruteForce(hullPointsBruteForce); Code commented and replaced to test experimental feature
+    bruteForceTransitionAnimation(hullPointsBruteForce);
+    
     return bruteHullPerf;
 }
 
