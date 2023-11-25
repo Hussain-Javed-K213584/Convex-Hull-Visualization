@@ -3,24 +3,6 @@ const jarvisCanvas = document.getElementById("convex");
 const ctxJarvis = jarvisCanvas.getContext("2d");
 
 let currentJarvisIndex = 0;
-function drawHullJarvis(hullPoints) {
-    ctxJarvis.beginPath();
-    ctxJarvis.moveTo(hullPoints[currentJarvisIndex].x, hullPoints[currentJarvisIndex].y);
-    console.log(hullPoints);
-    ++currentJarvisIndex;
-    if (currentJarvisIndex == hullPoints.length){
-        ctxJarvis.moveTo(hullPoints[currentJarvisIndex - 1].x, hullPoints[currentJarvisIndex - 1].y);
-        ctxJarvis.lineTo(hullPoints[0].x, hullPoints[0].y);
-        ctxJarvis.stroke();
-        ctxJarvis.closePath();
-        currentJarvisIndex = 0;
-        return;
-    }
-    ctxJarvis.lineTo(hullPoints[currentJarvisIndex].x, hullPoints[currentJarvisIndex].y);
-    ctxJarvis.stroke();
-    setTimeout(drawHullJarvis, 500, hullPoints);
-}
-
 
 async function doJarvisMarch(){
     
@@ -28,7 +10,6 @@ async function doJarvisMarch(){
     let boundaryPoints = await JarvisConvexHull(points, points.length);
     const jarvis2 = performance.now();
     let hullP = boundaryPoints;
-    // drawHullJarvis(hullP);
     return jarvis2 - jarvis1;
 }
 
@@ -59,8 +40,6 @@ async function JarvisorientationTest(p, q, r, JarvisHullPoints){
     ctxJarvis.lineTo(q.x, q.y);
     ctxJarvis.closePath();
     ctxJarvis.stroke();
-    // ctxJarvis.lineTo(r.x, r.y);
-    // ctxJarvis.stroke()
     await sleep(100);
     ctxJarvis.clearRect(0, 0, canvas.width, canvas.height)
     points.forEach((point) => {
@@ -83,14 +62,14 @@ async function ExpermentalJarvisDraw(hullPointsj){
     ctxJarvis.beginPath()
     ctxJarvis.strokeStyle = 'green';
     if (hullPointsj.length == 1){
-        ctxJarvis.strokeStyle = 'black';
+        ctxJarvis.strokeStyle = 'blue';
         return;
     };
     for (let i =0; i < hullPointsj.length; i++){
         ctxJarvis.lineTo(hullPointsj[i].x, hullPointsj[i].y);
     }
     ctxJarvis.stroke();
-    ctxJarvis.strokeStyle = 'black';
+    ctxJarvis.strokeStyle = 'blue';
 }
 
 async function JarvisConvexHull(points, n){
@@ -118,12 +97,6 @@ async function JarvisConvexHull(points, n){
             // This is the loop where all the checks are being made
             // I should start the experimental animation here
             // Check if a right turn is being made
-            // Experiment start
-            // ctxJarvis.beginPath();
-            // ctxJarvis.moveTo(hull[animationIndex].x, hull[animationIndex].y);
-            // ctxJarvis.stroke();
-
-            // Experiment End
             if (await JarvisorientationTest(points[p],
                 points[i], points[q], JarvisHullPoints) == 2){
                     q = i;
@@ -143,6 +116,6 @@ async function JarvisConvexHull(points, n){
     ctxJarvis.lineTo(JarvisHullPoints[0].x, JarvisHullPoints[0].y);
     ctxJarvis.closePath();
     ctxJarvis.stroke();
-    ctxJarvis.strokeStyle = 'black';
+    ctxJarvis.strokeStyle = 'blue';
     return JarvisHullPoints;
 }
