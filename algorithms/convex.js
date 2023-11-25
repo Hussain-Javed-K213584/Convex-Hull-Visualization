@@ -118,13 +118,6 @@ plotRandomBtn.addEventListener("click", () => {
     });
 });
 
-function reDrawLines(fromX, toY) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    points.forEach((point) => {
-        plotPoints(point.x, point.y);
-    })
-}
-
 function ConvexHullGrahamScan() {
     this.anchorPoint = undefined;
     this.reverse = false;
