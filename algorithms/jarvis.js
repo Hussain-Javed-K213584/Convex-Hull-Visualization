@@ -22,13 +22,13 @@ function drawHullJarvis(hullPoints) {
 }
 
 
-function doJarvisMarch(){
+async function doJarvisMarch(){
     
     const jarvis1 = performance.now();
-    let boundaryPoints =  JarvisConvexHull(points, points.length);
+    let boundaryPoints = await JarvisConvexHull(points, points.length);
     const jarvis2 = performance.now();
     let hullP = boundaryPoints;
-    drawHullJarvis(hullP);
+    // drawHullJarvis(hullP);
     return jarvis2 - jarvis1;
 }
 
@@ -38,6 +38,7 @@ startJarvisMarch.addEventListener("click", () => {
 });
 
 function JarvisleftIndex(points){
+    // We are trying to find the left mose point here
     min = 0;
     for (let i = 0; i < points.length; i++){
         if (points[i].x < points[min].x) {
@@ -49,10 +50,23 @@ function JarvisleftIndex(points){
             }
         }
     }
-    return min;
+    return min; // returns the index of the leftmost point
 }
 
-function JarvisorientationTest(p, q, r){
+async function JarvisorientationTest(p, q, r, JarvisHullPoints){
+    ctxJarvis.beginPath();
+    ctxJarvis.moveTo(p.x, p.y);
+    ctxJarvis.lineTo(q.x, q.y);
+    ctxJarvis.closePath();
+    ctxJarvis.stroke();
+    // ctxJarvis.lineTo(r.x, r.y);
+    // ctxJarvis.stroke()
+    await sleep(100);
+    ctxJarvis.clearRect(0, 0, canvas.width, canvas.height)
+    points.forEach((point) => {
+        plotPoints(point.x, point.y)
+    })
+    ExpermentalJarvisDraw(JarvisHullPoints);
     let val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
     if (val == 0){
         return 0;
@@ -65,25 +79,53 @@ function JarvisorientationTest(p, q, r){
     }
 }
 
-function JarvisConvexHull(points, n){
+async function ExpermentalJarvisDraw(hullPointsj){
+    ctxJarvis.beginPath()
+    ctxJarvis.strokeStyle = 'green';
+    if (hullPointsj.length == 1){
+        ctxJarvis.strokeStyle = 'black';
+        return;
+    };
+    for (let i =0; i < hullPointsj.length; i++){
+        ctxJarvis.lineTo(hullPointsj[i].x, hullPointsj[i].y);
+    }
+    ctxJarvis.stroke();
+    ctxJarvis.strokeStyle = 'black';
+}
+
+async function JarvisConvexHull(points, n){
     if (n < 3){
         return;
     }
-
+    
+    // Stores the leftmost index
     let l = JarvisleftIndex(points);
-    hull = [];
-
+    let hull = []; // Stores the valid convex hull points
+    let JarvisHullPoints = [];
+    
 
     // Start with leftmost index
     let p = l;
     let q = 0;
     while(true){
         hull.push(p);
-
+        JarvisHullPoints.push(points[p])
+        // This hull.push() means we found the index at which convex is created
+        // Draw a line once this happens
+        await ExpermentalJarvisDraw(JarvisHullPoints);
         q = (p + 1) % n;
         for (let i = 0; i < n; i++){
-            if (JarvisorientationTest(points[p],
-                points[i], points[q]) == 2){
+            // This is the loop where all the checks are being made
+            // I should start the experimental animation here
+            // Check if a right turn is being made
+            // Experiment start
+            // ctxJarvis.beginPath();
+            // ctxJarvis.moveTo(hull[animationIndex].x, hull[animationIndex].y);
+            // ctxJarvis.stroke();
+
+            // Experiment End
+            if (await JarvisorientationTest(points[p],
+                points[i], points[q], JarvisHullPoints) == 2){
                     q = i;
                 }
         }
@@ -92,11 +134,15 @@ function JarvisConvexHull(points, n){
         if (p == l){
             break;
         }
+        await ExpermentalJarvisDraw(JarvisHullPoints);
     }
-    
-    let hullPoints = [];
-    hull.forEach((index) => {
-        hullPoints.push(points[index]);
-    });
-    return hullPoints;
+    // Draw the final hull when reaching the end
+    ctxJarvis.strokeStyle = 'green';
+    ctxJarvis.beginPath();
+    ctxJarvis.moveTo(JarvisHullPoints[JarvisHullPoints.length - 1].x, JarvisHullPoints[JarvisHullPoints.length -1].y);
+    ctxJarvis.lineTo(JarvisHullPoints[0].x, JarvisHullPoints[0].y);
+    ctxJarvis.closePath();
+    ctxJarvis.stroke();
+    ctxJarvis.strokeStyle = 'black';
+    return JarvisHullPoints;
 }

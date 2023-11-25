@@ -78,7 +78,7 @@ function generateRandomPoints(){
     let randomInterval = function (min, max){
         return (Math.random() * (max - min + 1) + min);
     }
-    for (let i = 0; i < 500; i++){
+    for (let i = 0; i < 100; i++){
         let point = {
             x: randomInterval(10, cWidth-10),
             y: randomInterval(10, cHeight-10)
