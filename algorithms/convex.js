@@ -59,18 +59,18 @@ function drawGrahamHull(hullPoints) {
     setTimeout(drawGrahamHull, 500, hullPoints);
 }
 
-function doGrahamScan() {
-    const t1 = performance.now();
-    let hull = new ConvexHullGrahamScan()
-    const t2 = performance.now();
-    const grahamPerformance = t2 - t1;
-    points.forEach((point) => {
-        hull.addPoint(point.x, point.y);
-    })
-    let hullP = hull.getHull();
-    console.log(hullP);
-    drawGrahamHull(hullP);
-    return grahamPerformance;
+async function doGrahamScan() {
+    let grahamscan = new GrahamScan();
+	points.forEach((point) => {
+		grahamscan.addPoint([point.x, point.y]);	
+	})
+	let hull = await grahamscan.getHull();
+	let hullPoints = [];
+	hull.forEach((hullpoint) => {
+		hullPoints.push({x: hullpoint[0], y: hullpoint[1]});
+	})
+	console.log(hullPoints);
+	// drawGrahamHull(hullPoints);
 }
 
 function generateRandomPoints(){
@@ -118,162 +118,198 @@ plotRandomBtn.addEventListener("click", () => {
     });
 });
 
-function ConvexHullGrahamScan() {
-    this.anchorPoint = undefined;
-    this.reverse = false;
-    this.points = [];
-}
 
-ConvexHullGrahamScan.prototype = {
+const X = 0;
+const Y = 1;
+const REMOVED = -1;
 
-    constructor: ConvexHullGrahamScan,
+class GrahamScan {
 
-    Point: function (x, y) {
-        this.x = x;
-        this.y = y;
-    },
-
-    _findPolarAngle: function (a, b) {
-        var ONE_RADIAN = 57.295779513082;
-        var deltaX, deltaY;
-
-        //if the points are undefined, return a zero difference angle.
-        if (!a || !b) return 0;
-
-        deltaX = (b.x - a.x);
-        deltaY = (b.y - a.y);
-
-        if (deltaX == 0 && deltaY == 0) {
-            return 0;
-        }
-
-        var angle = Math.atan2(deltaY, deltaX) * ONE_RADIAN;
-
-        if (this.reverse) {
-            if (angle <= 0) {
-                angle += 360;
-            }
-        } else {
-            if (angle >= 0) {
-                angle += 360;
-            }
-        }
-
-        return angle;
-    },
-
-    addPoint: function (x, y) {
-        //Check for a new anchor
-        var newAnchor =
-            (this.anchorPoint === undefined) ||
-            (this.anchorPoint.y > y) ||
-            (this.anchorPoint.y === y && this.anchorPoint.x > x);
-
-        if (newAnchor) {
-            if (this.anchorPoint !== undefined) {
-                this.points.push(new this.Point(this.anchorPoint.x, this.anchorPoint.y));
-            }
-            this.anchorPoint = new this.Point(x, y);
-        } else {
-            this.points.push(new this.Point(x, y));
-        }
-    },
-
-    _sortPoints: function () {
-        var self = this;
-
-        return this.points.sort(function (a, b) {
-            var polarA = self._findPolarAngle(self.anchorPoint, a);
-            var polarB = self._findPolarAngle(self.anchorPoint, b);
-
-            if (polarA < polarB) {
-                return -1;
-            }
-            if (polarA > polarB) {
-                return 1;
-            }
-
-            return 0;
-        });
-    },
-
-    _checkPoints: function (p0, p1, p2) {
-        var difAngle;
-        var cwAngle = this._findPolarAngle(p0, p1);
-        var ccwAngle = this._findPolarAngle(p0, p2);
-
-        if (cwAngle > ccwAngle) {
-
-            difAngle = cwAngle - ccwAngle;
-
-            return !(difAngle > 180);
-
-        } else if (cwAngle < ccwAngle) {
-
-            difAngle = ccwAngle - cwAngle;
-
-            return (difAngle > 180);
-
-        }
-
-        return true;
-    },
-
-    getHull: function () {
-        var hullPoints = [],
-            points,
-            pointsLength;
-
-        this.reverse = this.points.every(function (point) {
-            return (point.x < 0 && point.y < 0);
-        });
-
-        points = this._sortPoints();
-        pointsLength = points.length;
-
-        //If there are less than 3 points, joining these points creates a correct hull.
-        if (pointsLength < 3) {
-            points.unshift(this.anchorPoint);
-            return points;
-        }
-
-        //move first two points to output array
-        hullPoints.push(points.shift(), points.shift());
-
-        //scan is repeated until no concave points are present.
-        while (true) {
-            var p0,
-                p1,
-                p2;
-
-            hullPoints.push(points.shift());
-
-            p0 = hullPoints[hullPoints.length - 3];
-            p1 = hullPoints[hullPoints.length - 2];
-            p2 = hullPoints[hullPoints.length - 1];
-
-            if (this._checkPoints(p0, p1, p2)) {
-                hullPoints.splice(hullPoints.length - 2, 1);
-            }
-
-            if (points.length == 0) {
-                if (pointsLength == hullPoints.length) {
-                    //check for duplicate anchorPoint edge-case, if not found, add the anchorpoint as the first item.
-                    var ap = this.anchorPoint;
-                    //remove any udefined elements in the hullPoints array.
-                    hullPoints = hullPoints.filter(function (p) { return !!p; });
-                    if (!hullPoints.some(function (p) {
-                        return (p.x == ap.x && p.y == ap.y);
-                    })) {
-                        hullPoints.unshift(this.anchorPoint);
-                    }
-                    return hullPoints;
-                }
-                points = hullPoints;
-                pointsLength = points.length;
-                hullPoints = [];
-                hullPoints.push(points.shift(), points.shift());
-            }
-        }
+    constructor() {
+        /** @type {[Number, Number][]} */
+        this.points = [];
     }
-};
+
+    clear() {
+        this.points = [];
+    }
+
+    getPoints() {
+        return this.points;
+    }
+
+    setPoints(points) {
+        this.points = points.slice();  // copy
+    }
+
+    addPoint(point) {
+        this.points.push(point);
+    }
+
+    /**
+     * Returns the smallest convex hull of a given set of points. Runs in O(n log n).
+     *
+     * @return {[Number, Number][]}
+     */
+    async getHull() {
+        const pivot = this.preparePivotPoint();
+
+        let indexes = Array.from(this.points, (point, i) => i);
+        const angles = Array.from(this.points, (point) => this.getAngle(pivot, point));
+        const distances = Array.from(this.points, (point) => this.euclideanDistanceSquared(pivot, point));
+
+        // sort by angle and distance
+        indexes.sort((i, j) => {
+            const angleA = angles[i];
+            const angleB = angles[j];
+            if (angleA === angleB) {
+                const distanceA = distances[i];
+                const distanceB = distances[j];
+                return distanceA - distanceB;
+            }
+            return angleA - angleB;
+        });
+
+        // remove points with repeated angle (but never the pivot, so start from i=1)
+        for (let i = 1; i < indexes.length - 1; i++) {
+            if (angles[indexes[i]] === angles[indexes[i + 1]]) {  // next one has same angle and is farther
+                indexes[i] = REMOVED;  // remove it logically to avoid O(n) operation to physically remove it
+            }
+        }
+
+        const hull = [];
+        for (let i = 0; i < indexes.length; i++) {
+            const index = indexes[i];
+            const point = this.points[index];
+
+            if (index !== REMOVED) {
+                if (hull.length < 3) {
+                    hull.push(point);
+					// Add an animation here
+					// First 3 points are always added in stack
+					if (hull.length > 1){
+						ctx.strokeStyle = 'green';
+						ctx.beginPath();
+						ctx.moveTo(hull[i-1][0], hull[i-1][1])
+						ctx.lineTo(hull[i][0], hull[i][1]);
+						ctx.stroke();
+						await this.sleep(200);
+						ctx.strokeStyle = 'black';
+					}
+
+                } else {
+					let orientationPoint = this.checkOrientation(hull[hull.length - 2], hull[hull.length - 1], point)
+                    await this.sleep(200);
+					while (orientationPoint > 0) {
+                        hull.pop();
+						// A point is being popped here after pop reset canvas
+						// Draw lines again with the current given hull after pop
+						ctx.clearRect(0, 0, canvas.width, canvas.height);
+						points.forEach((point) => {
+							plotPoints(point.x, point.y);
+						})
+						ctx.strokeStyle = 'green';
+						ctx.beginPath();
+						ctx.moveTo(hull[0][0], hull[0][1]);
+						for (let i = 0; i < hull.length; i++){
+							ctx.lineTo(hull[i][0], hull[i][1]);
+						}
+						ctx.stroke();
+						ctx.strokeStyle = 'black';
+						orientationPoint = this.checkOrientation(hull[hull.length - 2], hull[hull.length - 1], point);
+						await this.sleep(200);
+					}
+                    hull.push(point);
+					if (i == indexes.length - 1){
+						ctx.strokeStyle = 'green';
+						ctx.clearRect(0, 0, canvas.width, canvas.height);
+						points.forEach((point) => {
+							plotPoints(point.x, point.y);
+						})
+						ctx.beginPath();
+						ctx.moveTo(hull[0][0], hull[0][1]);
+						for (let i = 0; i < hull.length; i++){
+							ctx.lineTo(hull[i][0], hull[i][1]);
+						}
+						ctx.stroke();
+						ctx.lineTo(hull[0][0], hull[0][1]);
+						ctx.stroke();
+					}
+                }
+            }
+        }
+
+        return hull.length < 3 ? [] : hull;
+    }
+
+	/**
+	 * A sleep function which utilizes Promise and setTimeout to cause a delay.
+	 * 
+	 * @param {Number} ms 
+	 * @returns {None}
+	 */
+	sleep(ms){
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
+    /**
+     * Check the orientation of 3 points in the order given.
+     *
+     * It works by comparing the slope of P1->P2 vs P2->P3. If P1->P2 > P2->P3, orientation is clockwise; if
+     * P1->P2 < P2->P3, counter-clockwise. If P1->P2 == P2->P3, points are co-linear.
+     *
+     * @param {[Number, Number]} p1
+     * @param {[Number, Number]} p2
+     * @param {[Number, Number]} p3
+     * @return {Number} positive if orientation is clockwise, negative if counter-clockwise, 0 if co-linear
+     */
+    checkOrientation(p1, p2, p3) {
+		// Check orientation from p2 to p3 for animation
+		ctx.strokeStyle = 'red';
+		ctx.beginPath();
+		ctx.moveTo(p2[0], p2[1]);
+		ctx.lineTo(p3[0], p3[1]);
+		ctx.stroke();
+		ctx.strokeStyle = 'black';
+        return (p2[Y] - p1[Y]) * (p3[X] - p2[X]) - (p3[Y] - p2[Y]) * (p2[X] - p1[X]);
+    }
+
+    /**
+     * @private
+     * @param {[Number, Number]} a
+     * @param {[Number, Number]} b
+     * @return Number
+     */
+    getAngle(a, b) {
+        return Math.atan2(b[Y] - a[Y], b[X] - a[X]);
+    }
+
+    /**
+     * @private
+     * @param {[Number, Number]} p1
+     * @param {[Number, Number]} p2
+     * @return {Number}
+     */
+    euclideanDistanceSquared(p1, p2) {
+        const a = p2[X] - p1[X];
+        const b = p2[Y] - p1[Y];
+        return a * a + b * b;
+    }
+
+    /**
+     * @private
+     * @return {[Number, Number]}
+     */
+    preparePivotPoint() {
+        let pivot = this.points[0];
+        let pivotIndex = 0;
+        for (let i = 1; i < this.points.length; i++) {
+            const point = this.points[i];
+            if (point[Y] < pivot[Y] || point[Y] === pivot[Y] && point[X] < pivot[X]) {
+                pivot = point;
+                pivotIndex = i;
+            }
+        }
+        return pivot;
+    }
+}
