@@ -2,13 +2,6 @@ const startJarvisMarch = document.getElementById("start-jarvis");
 const jarvisCanvas = document.getElementById("convex");
 const ctxJarvis = jarvisCanvas.getContext("2d");
 
-function draw(){
-    ctx.canvas.width = window.innerWidth / 1.5;
-    ctx.canvas.height = window.innerHeight / 1.5;
-}
-
-draw();
-
 let currentJarvisIndex = 0;
 
 async function doJarvisMarch(){

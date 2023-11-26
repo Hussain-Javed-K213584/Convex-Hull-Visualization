@@ -6,6 +6,14 @@ const plotRandomBtn = document.getElementById('plot-random');
 const grahamPerformanceResult = document.getElementById("performance-result");
 ctx.lineWidth = 3; // Set line width to 3
 
+function draw(){
+    ctx.canvas.width = window.innerWidth / 1.5;
+    ctx.canvas.height = window.innerHeight / 1.5;
+    ctx.lineWidth = 3;
+}
+
+draw();
+
 let points = [];
 // Thank u stack overflow
 function getMousePos(canvas, evt) {
@@ -70,7 +78,7 @@ async function doGrahamScan() {
 		hullPoints.push({x: hullpoint[0], y: hullpoint[1]});
 	})
 	console.log(hullPoints);
-	// drawGrahamHull(hullPoints);
+	
 }
 
 function generateRandomPoints(){
