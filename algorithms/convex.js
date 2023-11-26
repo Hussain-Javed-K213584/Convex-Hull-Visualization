@@ -70,15 +70,16 @@ function drawGrahamHull(hullPoints) {
 async function doGrahamScan() {
     let grahamscan = new GrahamScan();
 	points.forEach((point) => {
-		grahamscan.addPoint([point.x, point.y]);	
+        grahamscan.addPoint([point.x, point.y]);	
 	})
-	let hull = await grahamscan.getHull();
-	let hullPoints = [];
-	hull.forEach((hullpoint) => {
-		hullPoints.push({x: hullpoint[0], y: hullpoint[1]});
+	let hull = await grahamscan.getHull(); // Await works, now have to do performace.now()
+	console.log(hull.performanceTime);
+    let hullPoints = [];
+	hull.hull.forEach((hullpoint) => {
+        hullPoints.push({x: hullpoint[0], y: hullpoint[1]});
 	})
 	console.log(hullPoints);
-	
+    grahamPerformanceResult.innerText = `Algorithm Used: Graham Scan\nTime Taken: ${hull.performanceTime}ms`;
 }
 
 function generateRandomPoints(){
@@ -111,8 +112,7 @@ resetHullBtn.addEventListener("click", () => {
 });
 
 startGraham.addEventListener("click", () => {
-    const grahamPerformance = doGrahamScan();
-    grahamPerformanceResult.innerText = `Algorithm Used: Graham Scan\nTime Taken: ${grahamPerformance}ms`;
+    doGrahamScan();
 });
 
 plotRandomBtn.addEventListener("click", () => {
@@ -136,6 +136,9 @@ class GrahamScan {
     constructor() {
         /** @type {[Number, Number][]} */
         this.points = [];
+        this.totalPerformace = 0,
+        this.timeBefore,
+        this.timeAfter;
     }
 
     clear() {
@@ -160,6 +163,7 @@ class GrahamScan {
      * @return {[Number, Number][]}
      */
     async getHull() {
+        this.timeBefore = performance.now();
         const pivot = this.preparePivotPoint();
 
         let indexes = Array.from(this.points, (point, i) => i);
@@ -186,7 +190,10 @@ class GrahamScan {
         }
 
         const hull = [];
+        this.timeAfter = performance.now();
+        this.totalPerformace += this.timeAfter - this.timeBefore; // This calculates time before loop starts
         for (let i = 0; i < indexes.length; i++) {
+            this.timeBefore = performance.now();
             const index = indexes[i];
             const point = this.points[index];
 
@@ -201,14 +208,20 @@ class GrahamScan {
 						ctx.moveTo(hull[i-1][0], hull[i-1][1])
 						ctx.lineTo(hull[i][0], hull[i][1]);
 						ctx.stroke();
+                        this.timeAfter = performance.now();
+                        this.totalPerformace += this.timeAfter - this.timeBefore;
 						await this.sleep(200);
 						ctx.strokeStyle = 'black';
 					}
 
                 } else {
+                    this.timeBefore = performance.now();
 					let orientationPoint = this.checkOrientation(hull[hull.length - 2], hull[hull.length - 1], point)
+                    this.timeAfter = performance.now();
+                    this.totalPerformace += this.timeAfter - this.timeBefore;
                     await this.sleep(200);
 					while (orientationPoint > 0) {
+                        this.timeBefore = performance.now();
                         hull.pop();
 						// A point is being popped here after pop reset canvas
 						// Draw lines again with the current given hull after pop
@@ -225,8 +238,11 @@ class GrahamScan {
 						ctx.stroke();
 						ctx.strokeStyle = 'black';
 						orientationPoint = this.checkOrientation(hull[hull.length - 2], hull[hull.length - 1], point);
-						await this.sleep(200);
+						this.timeAfter = performance.now();
+                        this.totalPerformace = this.timeAfter - this.timeBefore;
+                        await this.sleep(200);
 					}
+                    this.timeBefore = performance.now();
                     hull.push(point);
 					if (i == indexes.length - 1){
 						ctx.strokeStyle = 'green';
@@ -243,11 +259,16 @@ class GrahamScan {
 						ctx.lineTo(hull[0][0], hull[0][1]);
 						ctx.stroke();
 					}
+                    this.timeAfter = performance.now();
+                    this.totalPerformace = this.timeAfter - this.timeBefore;
                 }
             }
         }
 
-        return hull.length < 3 ? [] : hull;
+        return {
+           hull: hull.length < 3 ? [] : hull,
+           performanceTime: this.totalPerformace
+        };
     }
 
 	/**
