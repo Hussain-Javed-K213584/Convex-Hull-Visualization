@@ -93,6 +93,7 @@ async function bruteForceTransitionAnimation(hullPoints){
     // Then create and erase lines from one point to the other
     // Use two loops, once the inner loop ends, create the first
     // conves line and continue onwards.
+    ctx.strokeStyle = 'black';
     let index1 = 0, index2 = 1; // Variables for hullPoints
     let upperLimit = 0; // The index till where the hull should be drawn
     // Outer loop stops at length - 1 becuase it would continue to draw even when hull was created
